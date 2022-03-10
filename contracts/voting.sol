@@ -23,7 +23,7 @@ contract Voting{
     }
     function convert(uint _amount) external {
         require(votingToken.balanceOf(msg.sender) >= _amount, "your staked token is lack");
-        VotingToken.burnfrom(msg.sender, _amount);
+        VotingToken.burnFrom(msg.sender, _amount);
         XToken.mint(team, _amount);
 
     }
