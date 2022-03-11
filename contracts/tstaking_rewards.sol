@@ -4,12 +4,13 @@ pragma solidity ^0.8;
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
 
 contract TStakingRewards {
+
+    address public admin;
+
     IERC20 public rewardsToken;
     IERC20 public stakingToken;
 
-
-
-    uint public rewardRate = 100;
+    uint public rewardRate ;
     uint public lastUpdateTime;
     uint public rewardPerTokenStored;
 
@@ -19,9 +20,8 @@ contract TStakingRewards {
     uint private _totalSupply;
     mapping(address => uint) private _balances;
 
-    constructor(address _stakingToken, address _rewardsToken) {
-        stakingToken = IERC20(_stakingToken);
-        rewardsToken = IERC20(_rewardsToken);
+    constructor() {
+        admin = msg.sender;
     }
 
     function rewardPerToken() public view returns (uint) {
@@ -68,6 +68,52 @@ contract TStakingRewards {
         uint reward = rewards[msg.sender];
         rewards[msg.sender] = 0;
         rewardsToken.transfer(msg.sender, reward);
+    }
+
+    /********************************************************
+     *                                                      *
+     *               ADMIN-ONLY FUNCTIONS                   *
+     *                                                      *
+     ********************************************************/
+
+    /*
+     * Set reward distribution speed.
+     *
+     * @param rewardToken Reward token speed to change
+     * @param speed New reward speed
+     */
+    function setRewardSpeed(uint _rewardRate) external adminOnly {
+        rewardRate = _rewardRate;
+    }
+
+    /*
+     * Set ERC20 reward token contract address.
+     *
+     * @param _rewardsToken Reward token address to set
+     */
+    function setRewardTokenAddress(address _rewardsToken) external adminOnly {
+        rewardsToken = IERC20(_rewardsToken);
+    }
+
+    /*
+     * Set the staked token contract address.
+     *
+     * @param _stakingToken New staked token contract address
+     */
+    function setStakedTokenAddress(address _stakingToken) external adminOnly {
+        stakingToken = IERC20(_stakingToken);
+    }
+
+
+    /********************************************************
+     *                                                      *
+     *                      MODIFIERS                       *
+     *                                                      *
+     ********************************************************/
+
+    modifier adminOnly {
+        require(msg.sender == admin, "admin only");
+        _;
     }
 }
 
