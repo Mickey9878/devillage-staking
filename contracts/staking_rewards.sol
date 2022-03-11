@@ -10,7 +10,7 @@ contract StakingRewards {
 
     IERC20 public rewardsToken;
     IERC20 public stakingToken;
-    Token public votingToken;
+    IERC20 public votingToken;
 
     uint public rewardRate;
     uint public lastUpdateTime;
@@ -57,7 +57,7 @@ contract StakingRewards {
         _totalSupply += _amount;
         _balances[msg.sender] += _amount;
         stakingToken.transferFrom(msg.sender, address(this), _amount);
-        votingToken.mint(msg.sender, _amount);
+        votingToken.transfer(msg.sender, _amount);
     }
 
     function withdraw(uint _amount) external updateReward(msg.sender) {
@@ -109,7 +109,7 @@ contract StakingRewards {
     }
 
     function setVoteTokenAddress(address _voteToken) external adminOnly {
-        votingToken = Token(_voteToken);
+        votingToken = IERC20(_voteToken);
     }
 
 
